@@ -1,5 +1,14 @@
 # Tech Challenge – Previsão de Obesidade
 
+## Tecnologias Utilizadas
+
+![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python)
+![pandas](https://img.shields.io/badge/pandas-Data%20Analysis-purple?logo=pandas)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-Machine%20Learning-orange?logo=scikit-learn)
+![Streamlit](https://img.shields.io/badge/Streamlit-Aplicação%20Web-red?logo=streamlit)
+![Plotly](https://img.shields.io/badge/Plotly-Visualização-lightgrey?logo=plotly)
+![Joblib](https://img.shields.io/badge/Joblib-Serialização-yellow)
+
 ## Descrição do Projeto
 Este projeto tem como objetivo desenvolver uma solução de **Machine Learning** para **previsão do nível de obesidade** de indivíduos a partir de dados demográficos, comportamentais e de hábitos de vida.  
 
