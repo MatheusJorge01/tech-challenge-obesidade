@@ -157,6 +157,7 @@ if menu == "Predição de Obesidade":
                                            
     st.markdown("---")
     if st.button("Prever"):
+        # 1. Cria o dicionário com os valores das variáveis
         input_dict = {
             "Gender": map_genero[genero_pt],
             "Age": idade,
@@ -176,15 +177,16 @@ if menu == "Predição de Obesidade":
             "MTRANS": map_transporte[transporte_pt]
         }
 
-        # O DataFrame deve ser criado APENAS aqui dentro
-        input_data = pd.DataFrame(
-            [[input_dict[col] for col in model.feature_names_in_]],
-            columns=model.feature_names_in_
-        )
+        # 2. Transforma em DataFrame (O Pipeline cuidará do OneHotEncoding)
+        input_data = pd.DataFrame([input_dict])
 
-        prediction = model.predict(input_data)[0]
-        resultado = traducao_resultado.get(prediction, prediction)
-        st.success(f"### Nível de obesidade previsto: {resultado}")
+        # 3. Predição
+        try:
+            prediction = model.predict(input_data)[0]
+            resultado = traducao_resultado.get(prediction, prediction)
+            st.success(f"### Nível de obesidade previsto: {resultado}")
+        except Exception as e:
+            st.error(f"Erro ao processar predição: {e}")
 
 # ==============================
 # PÁGINA 2 — PAINEL ANALÍTICO
