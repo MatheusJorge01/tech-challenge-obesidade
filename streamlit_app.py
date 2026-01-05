@@ -3,6 +3,10 @@ import pandas as pd
 import joblib
 import plotly.express as px
 
+@st.cache_resource
+def load_model():
+    return joblib.load("model_obesity.joblib")
+
 # ==============================
 # Configuração da página
 # ==============================
@@ -56,7 +60,7 @@ if menu == "Predição de Obesidade":
     st.title("Predição do Nível de Obesidade")
     st.write("Preencha os dados abaixo para obter a previsão.")
 
-    model = joblib.load("model_obesity.joblib")
+    model = load_model()
 
     col1, col2, col3 = st.columns(3)
 
