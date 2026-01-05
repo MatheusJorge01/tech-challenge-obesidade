@@ -152,7 +152,7 @@ else:
             df,
             x="Age",
             title="Distribuição da Idade",
-            labels={"Age": "Idade (anos)"}
+            labels={"Age": "Idade (Anos)"}
         )
         fig_idade.update_yaxes(title_text="Quantidade de Indivíduos")
         g2.plotly_chart(fig_idade, use_container_width=True)
