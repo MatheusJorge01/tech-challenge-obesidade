@@ -154,9 +154,9 @@ if menu == "Predição de Obesidade":
             "Meio de transporte",
             list(map_transporte.keys())
         )
-
+                                           
     if st.button("Prever"):
-        input_data = pd.DataFrame([{
+        input_dict = {
             "Gender": map_genero[genero_pt],
             "Age": idade,
             "Height": altura,
@@ -167,20 +167,25 @@ if menu == "Predição de Obesidade":
             "NCP": float(ncp),
             "CAEC": map_frequencia[caec_pt],
             "SMOKE": map_sim_nao[fuma_pt],
-            "CH2O": float (ch2o),
+            "CH2O": float(ch2o),
             "SCC": map_sim_nao[scc_pt],
             "FAF": float(faf),
             "TUE": float(tue),
             "CALC": map_frequencia[calc_pt],
             "MTRANS": map_transporte[transporte_pt]
-        }])
+        }
 
-        resultado = traducao_resultado.get(
-            model.predict(input_data)[0],
-            "Resultado não identificado"
+        # SEGUNDO: Criamos o DataFrame que o modelo entende
+        input_data = pd.DataFrame(
+            [[input_dict[col] for col in model.feature_names_in_]],
+            columns=model.feature_names_in_
         )
 
-        st.success(f"Nível de obesidade previsto: **{resultado}**")
+        # TERCEIRO: O modelo faz a previsão
+        prediction = model.predict(input_data)[0]
+        resultado = traducao_resultado.get(prediction, prediction)
+
+        st.success(f"### Nível de obesidade previsto: {resultado}")
 
 # ==============================
 # PÁGINA 2 — PAINEL ANALÍTICO
