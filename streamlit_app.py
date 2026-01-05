@@ -157,7 +157,6 @@ if menu == "Predição de Obesidade":
                                            
     st.markdown("---")
     if st.button("Prever"):
-        # O dicionário deve ser criado PRIMEIRO e dentro do botão
         input_dict = {
             "Gender": map_genero[genero_pt],
             "Age": idade,
@@ -177,18 +176,15 @@ if menu == "Predição de Obesidade":
             "MTRANS": map_transporte[transporte_pt]
         }
 
-        # Criação do DataFrame dentro do botão
+        # O DataFrame deve ser criado APENAS aqui dentro
         input_data = pd.DataFrame(
             [[input_dict[col] for col in model.feature_names_in_]],
             columns=model.feature_names_in_
         )
 
-        try:
-            prediction = model.predict(input_data)[0]
-            resultado = traducao_resultado.get(prediction, prediction)
-            st.success(f"### Nível de obesidade previsto: {resultado}")
-        except Exception as e:
-            st.error(f"Erro na predição: {e}. Verifique as versões das bibliotecas.")
+        prediction = model.predict(input_data)[0]
+        resultado = traducao_resultado.get(prediction, prediction)
+        st.success(f"### Nível de obesidade previsto: {resultado}")
 
 # ==============================
 # PÁGINA 2 — PAINEL ANALÍTICO
