@@ -69,22 +69,91 @@ if menu == "Predição de Obesidade":
         idade = st.number_input("Idade (anos)", 14, 61, 30)
         altura = st.number_input("Altura (m)", 1.40, 2.00, 1.70)
         peso = st.number_input("Peso (kg)", 30.0, 200.0, 70.0)
-        historico_pt = st.selectbox("Histórico familiar de excesso de peso?", ["Sim", "Não"])
+        historico_pt = st.selectbox(
+            "Histórico familiar de excesso de peso?",
+            ["Sim", "Não"]
+        )
 
     with col2:
-        favc_pt = st.selectbox("Consome alimentos muito calóricos?", ["Sim", "Não"])
-        fcvc = st.selectbox("Consumo de vegetais", [1, 2, 3])
-        ncp = st.selectbox("Número de refeições por dia", [1, 2, 3, 4])
-        caec_pt = st.selectbox("Consumo entre refeições", ["Nunca", "Às vezes", "Frequentemente", "Sempre"])
+        favc_pt = st.selectbox(
+            "Consome alimentos muito calóricos?",
+            ["Sim", "Não"]
+        )
+
+        fcvc = st.selectbox(
+            "Consumo de vegetais",
+            [1, 2, 3],
+            format_func=lambda x: {
+                1: "Raramente",
+                2: "Às vezes",
+                3: "Sempre"
+            }[x]
+        )
+
+        ncp = st.selectbox(
+            "Número de refeições principais por dia",
+            [1, 2, 3, 4],
+            format_func=lambda x: {
+                1: "Uma",
+                2: "Duas",
+                3: "Três",
+                4: "Quatro ou mais"
+            }[x]
+        )
+
+        caec_pt = st.selectbox(
+            "Consumo entre refeições",
+            ["Nunca", "Às vezes", "Frequentemente", "Sempre"]
+        )
 
     with col3:
         fuma_pt = st.selectbox("Fuma?", ["Sim", "Não"])
-        ch2o = st.selectbox("Consumo diário de água", [1, 2, 3])
-        scc_pt = st.selectbox("Monitora ingestão calórica?", ["Sim", "Não"])
-        faf = st.selectbox("Atividade física semanal", [0, 1, 2, 3])
-        tue = st.selectbox("Tempo em telas", [0, 1, 2])
-        calc_pt = st.selectbox("Consumo de bebida alcoólica", ["Nunca", "Às vezes", "Frequentemente", "Sempre"])
-        transporte_pt = st.selectbox("Meio de transporte", list(map_transporte.keys()))
+
+        ch2o = st.selectbox(
+            "Consumo diário de água",
+            [1, 2, 3],
+            format_func=lambda x: {
+                1: "Menos de 1 litro",
+                2: "Entre 1 e 2 litros",
+                3: "Mais de 2 litros"
+            }[x]
+        )
+
+        scc_pt = st.selectbox(
+            "Monitora ingestão calórica?",
+            ["Sim", "Não"]
+        )
+
+        faf = st.selectbox(
+            "Atividade física semanal",
+            [0, 1, 2, 3],
+            format_func=lambda x: {
+                0: "Nenhuma",
+                1: "1–2 vezes",
+                2: "3–4 vezes",
+                3: "5 vezes ou mais"
+            }[x]
+        )
+
+        tue = st.selectbox(
+            "Tempo diário em telas",
+            [0, 1, 2],
+            format_func=lambda x: {
+                0: "Até 2 horas",
+                1: "3 a 5 horas",
+                2: "Mais de 5 horas"
+            }[x]
+        )
+
+        calc_pt = st.selectbox(
+            "Consumo de bebida alcoólica",
+            ["Nunca", "Às vezes", "Frequentemente", "Sempre"]
+        )
+
+        transporte_pt = st.selectbox(
+            "Meio de transporte",
+            list(map_transporte.keys())
+        )
 
     if st.button("Prever"):
         input_data = pd.DataFrame([{
@@ -94,20 +163,24 @@ if menu == "Predição de Obesidade":
             "Weight": peso,
             "family_history": map_sim_nao[historico_pt],
             "FAVC": map_sim_nao[favc_pt],
-            "FCVC": fcvc,
-            "NCP": ncp,
+            "FCVC": float(fcvc),
+            "NCP": float(ncp),
             "CAEC": map_frequencia[caec_pt],
             "SMOKE": map_sim_nao[fuma_pt],
-            "CH2O": ch2o,
+            "CH2O": float (ch2o),
             "SCC": map_sim_nao[scc_pt],
-            "FAF": faf,
-            "TUE": tue,
+            "FAF": float(faf),
+            "TUE": float(tue),
             "CALC": map_frequencia[calc_pt],
             "MTRANS": map_transporte[transporte_pt]
         }])
 
-        resultado = traducao_resultado.get(model.predict(input_data)[0])
-        st.success(f"Nível de obesidade previsto: {resultado}")
+        resultado = traducao_resultado.get(
+            model.predict(input_data)[0],
+            "Resultado não identificado"
+        )
+
+        st.success(f"Nível de obesidade previsto: **{resultado}**")
 
 # ==============================
 # PÁGINA 2 — PAINEL ANALÍTICO
