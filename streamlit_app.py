@@ -156,7 +156,7 @@ if menu == "Predição de Obesidade":
         )
                                            
     st.markdown("---")
-    if st.button("Prever"):
+    if ("Prever"):
         # 1. Cria o dicionário com os valores das variáveis
         input_dict = {
             "Gender": map_genero[genero_pt],
@@ -192,94 +192,118 @@ if menu == "Predição de Obesidade":
 # PÁGINA 2 — PAINEL ANALÍTICO
 # ==============================
 else:
+    st.title(" Painel Analítico – Visão Médica Estratégica")
 
-    st.title("Painel Analítico – Obesidade")
+    # ==============================
+    # Carregamento e preparação dos dados
+    # ==============================
+    try:
+        df = pd.read_csv("Obesity.csv")
+        df["BMI"] = df["Weight"] / (df["Height"] ** 2)
+        df["Nivel_Obesidade"] = df["Obesity"].map(traducao_resultado)
+    except Exception as e:
+        st.error(f"Erro ao carregar a base de dados: {e}")
+        st.stop()
 
-    df = pd.read_csv("Obesity.csv")
-    df["BMI"] = df["Weight"] / (df["Height"] ** 2)
-    df["Nivel_Obesidade"] = df["Obesity"].map(traducao_resultado)
-
-    tab1, tab2 = st.tabs(["Visão Geral", "Exploração Interativa"])
+    # ==============================
+    # Abas
+    # ==============================
+    tab1, tab2 = st.tabs(
+        [" Visão Geral e Insights", " Exploração Interativa"]
+    )
 
     # ==============================
     # TAB 1 — VISÃO GERAL
     # ==============================
     with tab1:
 
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Indivíduos", len(df))
-        col2.metric("IMC médio", round(df["BMI"].mean(), 2))
-        col3.metric("Idade média", round(df["Age"].mean(), 1))
-        col4.metric("Consumo médio de água", round(df["CH2O"].mean(), 1))
+        # KPIs
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Total de Registros", len(df))
+        c2.metric("IMC Médio", round(df["BMI"].mean(), 2))
+        c3.metric("Idade Média", f"{round(df['Age'].mean(), 1)} anos")
+        perc_hist = (df["family_history"] == "yes").mean() * 100
+        c4.metric("Histórico Familiar (%)", f"{perc_hist:.1f}%")
 
-        st.subheader("Distribuição de Indicadores")
+        st.divider()
+
+        # Distribuições principais
+        st.subheader("Distribuição de Variáveis Físicas")
 
         g1, g2, g3 = st.columns(3)
 
-        # IMC
-        fig_imc = px.histogram(
-            df,
-            x="BMI",
-            title="Distribuição do IMC",
-            labels={"BMI": "Índice de Massa Corporal (IMC)"}
+        g1.plotly_chart(
+            px.histogram(
+                df,
+                x="BMI",
+                title="Distribuição do IMC",
+                labels={
+                    "BMI": "Índice de Massa Corporal (IMC)",
+                    "count": "Quantidade de Indivíduos"
+                }
+            ),
+            use_container_width=True
         )
-        fig_imc.update_yaxes(title_text="Quantidade de Indivíduos")
-        g1.plotly_chart(fig_imc, use_container_width=True)
 
-        # Idade
-        fig_idade = px.histogram(
-            df,
-            x="Age",
-            title="Distribuição da Idade",
-            labels={"Age": "Idade (Anos)"}
+        g2.plotly_chart(
+            px.histogram(
+                df,
+                x="Age",
+                title="Distribuição da Idade",
+                labels={
+                    "Age": "Idade (anos)",
+                    "count": "Quantidade de Indivíduos"
+                }
+            ),
+            use_container_width=True
         )
-        fig_idade.update_yaxes(title_text="Quantidade de Indivíduos")
-        g2.plotly_chart(fig_idade, use_container_width=True)
 
-        # Água
-        fig_agua = px.histogram(
-            df,
-            x="CH2O",
-            title="Distribuição do Consumo de Água",
-            labels={
-                "CH2O": "Consumo Diário de Água (Litros)"
-            }
+        g3.plotly_chart(
+            px.histogram(
+                df,
+                x="CH2O",
+                title="Distribuição do Consumo de Água",
+                labels={
+                    "CH2O": "Consumo Diário de Água (1=<1L | 2=1–2L | 3=>2L)",
+                    "count": "Quantidade de Indivíduos"
+                }
+            ),
+            use_container_width=True
         )
-        fig_agua.update_yaxes(title_text="Quantidade de Indivíduos")
-        g3.plotly_chart(fig_agua, use_container_width=True)
 
         st.subheader("Distribuição dos Níveis de Obesidade")
 
-        fig_ob = px.histogram(
-            df,
-            x="Nivel_Obesidade",
-            color="Nivel_Obesidade",
-            labels={"Nivel_Obesidade": "Nível de Obesidade"}
+        st.plotly_chart(
+            px.histogram(
+                df,
+                x="Nivel_Obesidade",
+                color="Nivel_Obesidade",
+                labels={
+                    "Nivel_Obesidade": "Nível de Obesidade",
+                    "count": "Quantidade de Indivíduos"
+                }
+            ),
+            use_container_width=True
         )
-        fig_ob.update_yaxes(title_text="Quantidade de Indivíduos")
-        st.plotly_chart(fig_ob, use_container_width=True)
 
-        fig_scatter = px.scatter(
-            df,
-            x="Age",
-            y="BMI",
-            color="Nivel_Obesidade",
-            labels={
-                "Age": "Idade (anos)",
-                "BMI": "IMC"
-            }
+        st.info(
+            """
+            **Insights Analíticos**
+            - O IMC apresenta forte correlação com os níveis de obesidade.
+            - A maior concentração da amostra está entre adultos jovens.
+            - Indivíduos com histórico familiar positivo tendem a níveis mais elevados de obesidade.
+            """
         )
-        st.plotly_chart(fig_scatter, use_container_width=True)
 
     # ==============================
     # TAB 2 — EXPLORAÇÃO INTERATIVA
     # ==============================
     with tab2:
 
-        st.subheader("Exploração Interativa")
+        st.subheader("Exploração Interativa dos Dados")
 
         nivel = st.multiselect(
-            "Nível de obesidade",
+            "Selecione os níveis de obesidade",
             df["Nivel_Obesidade"].unique(),
             df["Nivel_Obesidade"].unique()
         )
@@ -291,31 +315,29 @@ else:
             (18, 60)
         )
 
-        df_filtro = df[
+        df_filtrado = df[
             (df["Nivel_Obesidade"].isin(nivel)) &
             (df["Age"].between(idade_min, idade_max))
         ]
 
-        fig_filtrado = px.scatter(
-            df_filtro,
-            x="Age",
-            y="BMI",
-            color="Nivel_Obesidade",
-            labels={
-                "Age": "Idade (anos)",
-                "BMI": "IMC"
-            }
+        st.plotly_chart(
+            px.scatter(
+                df_filtrado,
+                x="Age",
+                y="BMI",
+                color="Nivel_Obesidade",
+                labels={
+                    "Age": "Idade (anos)",
+                    "BMI": "IMC",
+                    "Nivel_Obesidade": "Nível de Obesidade"
+                },
+                title="Relação entre Idade e IMC"
+            ),
+            use_container_width=True
         )
 
-        st.plotly_chart(fig_filtrado, use_container_width=True)
 
-    st.subheader("Principais Insights")
-    st.write(
-        "- O IMC é o principal fator de separação entre os níveis de obesidade.\n"
-        "- Adultos jovens concentram grande parte da amostra.\n"
-        "- Há forte associação entre hábitos alimentares, atividade física e obesidade.\n"
-        "- O histórico familiar aparece como fator relevante."
-    )
+
 
 
 
