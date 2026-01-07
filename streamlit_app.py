@@ -8,6 +8,11 @@ def load_model():
     return joblib.load("model_obesity.joblib")
 
 # ==============================
+# Constantes de visualização
+# ==============================
+LABEL_COUNT = "Quantidade de Indivíduos"
+
+# ==============================
 # Configuração da página
 # ==============================
 st.set_page_config(
@@ -66,7 +71,7 @@ if menu == "Predição de Obesidade":
 
     with col1:
         genero_pt = st.selectbox("Gênero", ["Feminino", "Masculino"])
-        idade = st.number_input("Idade (anos)", 14, 61, 30)
+        idade = st.number_input("Idade (Anos)", 14, 61, 30)
         altura = st.number_input("Altura (m)", 1.40, 2.00, 1.70)
         peso = st.number_input("Peso (kg)", 30.0, 200.0, 70.0)
         historico_pt = st.selectbox(
@@ -217,76 +222,74 @@ else:
     # ==============================
     with tab1:
 
-        # KPIs
+    # KPIs
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total de Registros", len(df))
         c2.metric("IMC Médio", round(df["BMI"].mean(), 2))
-        c3.metric("Idade Média", f"{round(df['Age'].mean(), 1)} anos")
+        c3.metric("Idade Média", f"{round(df['Age'].mean(), 1)} Anos")
         perc_hist = (df["family_history"] == "yes").mean() * 100
         c4.metric("Histórico Familiar (%)", f"{perc_hist:.1f}%")
 
-        st.divider()
+    st.divider()
 
-        # Distribuições principais
-        st.subheader("Distribuição de Variáveis Físicas")
+    # ==============================
+    # Distribuição de Variáveis Físicas
+    # ==============================
+    st.subheader("Distribuição de Variáveis Físicas")
 
-        g1, g2, g3 = st.columns(3)
+    g1, g2, g3 = st.columns(3)
 
-        g1.plotly_chart(
-            px.histogram(
-                df,
-                x="BMI",
-                title="Distribuição do IMC",
-                labels={
-                    "BMI": "Índice de Massa Corporal (IMC)",
-                    "count": "Quantidade de Indivíduos"
-                }
-            ),
-            use_container_width=True
-        )
+    # IMC
+    fig_imc = px.histogram(
+        df,
+        x="BMI",
+        title="Distribuição do IMC",
+        labels={"BMI": "Índice de Massa Corporal (IMC)"}
+    )
+    fig_imc.update_yaxes(title_text="Quantidade de Indivíduos")
+    g1.plotly_chart(fig_imc, use_container_width=True)
 
-        g2.plotly_chart(
-            px.histogram(
-                df,
-                x="Age",
-                title="Distribuição da Idade",
-                labels={
-                    "Age": "Idade (anos)",
-                    "count": "Quantidade de Indivíduos"
-                }
-            ),
-            use_container_width=True
-        )
+    # Idade
+    fig_idade = px.histogram(
+        df,
+        x="Age",
+        title="Distribuição da Idade",
+        labels={"Age": "Idade (Anos)"}
+    )
+    fig_idade.update_yaxes(title_text="Quantidade de Indivíduos")
+    g2.plotly_chart(fig_idade, use_container_width=True)
 
-        g3.plotly_chart(
-            px.histogram(
-                df,
-                x="CH2O",
-                title="Distribuição do Consumo de Água",
-                labels={
-                    "CH2O": "Consumo Diário de Água (1=<1L | 2=1–2L | 3=>2L)",
-                    "count": "Quantidade de Indivíduos"
-                }
-            ),
-            use_container_width=True
-        )
+    # Consumo de Água
+    fig_agua = px.histogram(
+        df,
+        x="CH2O",
+        title="Distribuição do Consumo Diário de Água",
+        labels={"CH2O": "Consumo Diário de Água (em Litros)"}
+    )
+    fig_agua.update_yaxes(title_text="Quantidade de Indivíduos")
+    fig_agua.update_xaxes(
+        tickmode="array",
+        tickvals=[1, 2, 3],
+        ticktext=["< 1 litro", "1 a 2 litros", "> 2 litros"]
+    )
+    g3.plotly_chart(fig_agua, use_container_width=True)
 
-        st.subheader("Distribuição dos Níveis de Obesidade")
+    # ==============================
+    # Distribuição dos Níveis de Obesidade
+    # ==============================
+    st.subheader("Distribuição dos Níveis de Obesidade")
 
-        st.plotly_chart(
-            px.histogram(
-                df,
-                x="Nivel_Obesidade",
-                color="Nivel_Obesidade",
-                labels={
-                    "Nivel_Obesidade": "Nível de Obesidade",
-                    "count": "Quantidade de Indivíduos"
-                }
-            ),
-            use_container_width=True
-        )
+    fig_obesidade = px.histogram(
+        df,
+        x="Nivel_Obesidade",
+        color="Nivel_Obesidade",
+        labels={"Nivel_Obesidade": "Nível de Obesidade"}
+    )
+    fig_obesidade.update_yaxes(title_text="Quantidade de Indivíduos")
+    st.plotly_chart(fig_obesidade, use_container_width=True)
 
-        st.info(
+
+    st.info(
             """
             **Insights Analíticos**
             - O IMC apresenta forte correlação com os níveis de obesidade.
@@ -327,7 +330,7 @@ else:
                 y="BMI",
                 color="Nivel_Obesidade",
                 labels={
-                    "Age": "Idade (anos)",
+                    "Age": "Idade (Anos)",
                     "BMI": "IMC",
                     "Nivel_Obesidade": "Nível de Obesidade"
                 },
