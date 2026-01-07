@@ -289,14 +289,17 @@ else:
     st.plotly_chart(fig_obesidade, use_container_width=True)
 
 
-    st.info(
-            """
-            **Insights Analíticos**
-            - O IMC apresenta forte correlação com os níveis de obesidade.
-            - A maior concentração da amostra está entre adultos jovens.
-            - Indivíduos com histórico familiar positivo tendem a níveis mais elevados de obesidade.
-            """
-        )
+    st.info("""
+- O **Índice de Massa Corporal (IMC)** é o fator mais determinante na separação entre os níveis de obesidade,
+  apresentando forte correlação com a variável alvo.
+- A maior concentração da amostra está entre **adultos jovens**, indicando maior prevalência de variações
+  nos níveis de obesidade nessa faixa etária.
+- Indivíduos com **histórico familiar positivo** tendem a apresentar níveis mais elevados de obesidade,
+  sugerindo influência genética e comportamental.
+- Há uma associação relevante entre **hábitos alimentares calóricos** e níveis mais elevados de obesidade.
+- A **frequência de atividade física** apresenta relação inversa com o grau de obesidade, reforçando seu papel
+  como fator protetivo.
+""")
 
     # ==============================
     # TAB 2 — EXPLORAÇÃO INTERATIVA
